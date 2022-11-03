@@ -8,7 +8,7 @@
 
 int pipefds[2];
 
-void *receiver(void *pVoid) {
+[[noreturn]] void *receiver(void *pVoid) {
     while(1){
         int i, result;
         result = read (pipefds[0],&i,1);
@@ -42,14 +42,20 @@ int main() {
     pthread_t thread_1, thread_2;
     pthread_attr_t tattr;
 
+    // Create a one-way communication channel (pipe)
     pipe(pipefds);
 
+    // Init thread attribute *ATTR with default attributes
     pthread_attr_init(&tattr);
+
+    //sched policy Round Robin
     pthread_attr_setschedpolicy(&tattr, SCHED_RR);
 
+    // Create threads 1 and 2
     pthread_create(&thread_1, &tattr, &sender, nullptr);
     pthread_create(&thread_2, &tattr, &receiver, nullptr);
 
+    // Join threads 1 and 2
     pthread_join(thread_1, nullptr);
     pthread_join(thread_2, nullptr);
 

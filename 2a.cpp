@@ -9,7 +9,7 @@
 #define QUEUE_NAME  "/test_queue"
 #define MAX_SIZE    1024
 
-void *receiver(void *pVoid) {
+[[noreturn]] void *receiver(void *pVoid) {
     mqd_t mq;
     ssize_t bytes_read;
     struct mq_attr attr{};
@@ -24,7 +24,8 @@ void *receiver(void *pVoid) {
     // Create the message queue
     mq = mq_open(QUEUE_NAME, O_CREAT | O_RDONLY | O_NONBLOCK, 0644, &attr);
 
-    while (1) {
+    while (true) {
+        // Locate some memory
         memset(buffer, 0x00, sizeof(buffer));
         bytes_read = mq_receive(mq, buffer, MAX_SIZE, nullptr);
         if (bytes_read >= 0) {
@@ -32,7 +33,7 @@ void *receiver(void *pVoid) {
         } else {
             printf("THREAD 2: None \n");
         }
-
+        // Flush STREAM
         fflush(stdout);
         usleep(0.1 * 1e6);
     }
@@ -65,12 +66,17 @@ int main() {
     pthread_t thread_1, thread_2;
     pthread_attr_t tattr;
 
+    //tattr init met defaultwaarden
     pthread_attr_init(&tattr);
+
+    //sched policy Round Robin
     pthread_attr_setschedpolicy(&tattr, SCHED_RR);
 
+    // Create threads 1 and 2
     pthread_create(&thread_2, &tattr, &receiver, nullptr);
     pthread_create(&thread_1, &tattr, &sender, nullptr);
 
+    // Join threads 1 and 2
     pthread_join(thread_2, nullptr);
     pthread_join(thread_1, nullptr);
 

@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <iostream>
 
-void *taskOne(void *pVoid) {
+[[noreturn]] void *taskOne(void *pVoid) {
     int i = 1;
     while(1){
         usleep(0.5 *1e6);
@@ -11,7 +11,7 @@ void *taskOne(void *pVoid) {
     }
 }
 
-void *taskTwo(void *pVoid) {
+[[noreturn]] void *taskTwo(void *pVoid) {
     int i = 1;
     while(1){
         usleep(1.3 *1e6);

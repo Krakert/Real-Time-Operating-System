@@ -1,7 +1,7 @@
 #include <iostream>
 #include <pthread.h>
 
-void *taskOne(void *pVoid) {
+[[noreturn]] void *taskOne(void *pVoid) {
     int m, n;
     while (true) {
         printf("task 1 \n");
@@ -13,7 +13,7 @@ void *taskOne(void *pVoid) {
     }
 }
 
-void *taskTwo(void *pVoid) {
+[[noreturn]] void *taskTwo(void *pVoid) {
     int m, n;
     while (true) {
         printf("task 2 \n");
@@ -56,7 +56,7 @@ int main() {
     pthread_attr_t tattr;
     pthread_t thread1, thread2, thread3, thread4;
 
-    //tattr init met defaultwaarden
+    // Init thread attribute *ATTR with default attributes
     pthread_attr_init(&tattr);
 
     //sched policy Round Robin
